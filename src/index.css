@@ -40,6 +40,7 @@ body.dark {
 
 html {
   scroll-behavior: smooth;
+  font-size: 15px; /* This creates the "90% zoom" effect */
 }
 
 body {
@@ -50,11 +51,19 @@ body {
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* --- Layout --- */
 .App {
-  display: flex;
+  display: grid;
+  grid-template-columns: 280px 1fr; /* Sidebar | Main Content */
+  min-height: 100vh;
+  transition: grid-template-columns 0.3s ease-in-out;
 }
 
+/* On mobile, collapse to a single column */
+@media (max-width: 1024px) {
+  .App {
+    grid-template-columns: 1fr;
+  }
+}
 .sidebar {
   width: 280px;
   height: 100vh;
@@ -68,20 +77,6 @@ body {
   transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.3s ease;
 }
 
-.main-content {
-  margin-left: 280px;
-  width: calc(100% - 280px);
-  transition: margin-left 0.3s ease-in-out;
-}
-
-@media (max-width: 1024px) {
-  .main-content {
-    margin-left: 0;
-    width: 100%;
-  }
-}
-
-/* --- Header --- */
 .header {
   position: sticky;
   top: 0;
@@ -97,6 +92,7 @@ body {
   -webkit-backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--color-panel-border);
   transition: background-color 0.2s ease, border-color 0.2s ease;
+  gap: 16px; /* This is the new line */
 }
 
 .header-logo {
@@ -104,6 +100,7 @@ body {
   font-weight: 700;
   color: var(--color-text-primary);
   text-decoration: none;
+  flex-shrink: 0; /* Prevents shrinking */
 }
 
 .header-nav {
@@ -136,6 +133,10 @@ body {
 }
 
 /* --- Sidebar --- */
+/*--- REPLACE IT WITH THIS ENTIRE BLOCK ---*/
+
+/*--- REPLACE IT WITH THIS ENTIRE BLOCK ---*/
+
 .sidebar-nav {
   padding: 24px;
 }
@@ -150,19 +151,27 @@ body {
 }
 .sidebar-nav a {
   color: var(--color-text-secondary);
-  text-decoration: none;
+  text-decoration: none; /* No underline ever */
   display: block;
-  padding: 6px 12px;
+  padding: 8px 12px; /* A little more vertical space */
   margin: 2px 0;
   border-radius: 6px;
   font-weight: 500;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
-.sidebar-nav a:hover { color: var(--color-accent-purple); }
+
+/* This is the magic: one rule for both hover and active states */
+.sidebar-nav a:hover,
 .sidebar-nav a.active {
-  color: var(--color-accent-purple);
-  font-weight: 600;
-  background-color: rgba(154, 52, 255, 0.1);
+  color: var(--color-text-primary);
+  font-weight: 500;
+  background-color: var(--color-panel-border);
+}
+
+/* A special rule to make the active link's text brighter */
+.sidebar-nav a.active {
+    color: var(--color-accent-purple);
+    font-weight: 600;
 }
 
 /* --- Main Content: Hero Section --- */
@@ -202,13 +211,12 @@ body {
   cursor: pointer;
   text-decoration: none;
   display: inline-block;
-  margin-bottom: 80px;
+  margin-bottom: 48px;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .get-started-button:hover {
   transform: scale(1.05);
-  box-shadow: 0px 8px 20px rgba(154, 52, 255, 0.3);
 }
 
 .feature-boxes {
@@ -245,8 +253,8 @@ body {
 /* --- Main Content: Documentation --- */
 .content-container { padding: 40px; }
 .content-section {
-  margin: 0 auto 100px auto;
-  padding-top: 80px; /* For scroll anchoring */
+  margin: 0 auto 64px auto; /* Changed from 100px */
+  padding-top: 80px;
   max-width: var(--max-content-width);
 }
 h2 {
@@ -296,14 +304,6 @@ pre {
 }
 pre code { font-size: 0.9em; line-height: 1.8; }
 
-/* --- Footer --- */
-.footer {
-  background-color: var(--color-panel-bg);
-  border-top: 1px solid var(--color-panel-border);
-  padding: 56px 40px;
-  margin-left: 280px;
-  transition: background-color 0.2s ease, border-color 0.2s ease, margin-left 0.3s ease-in-out;
-}
 .footer-content {
   max-width: 1200px;
   margin: 0 auto;
