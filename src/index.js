@@ -7,10 +7,10 @@ import {
 } from "react-router-dom";
 import './index.css';
 
-// The Main App Shell
+// The Main App Shell that provides the layout
 import App from './App';
 
-// Import all the new page components
+// Import all the page components
 import Intro from './pages/Intro';
 import Installation from './pages/Installation';
 import Usage from './pages/Usage';
@@ -24,14 +24,13 @@ import Evaluator from './pages/Evaluator';
 import Changelog from './pages/Changelog';
 import Discord from './pages/Discord';
 
-
-// This is the router configuration
+// This is the correct router configuration
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />, // The App component is the layout for all pages
+    element: <App />, // App is the root layout component
     children: [
-      // The default route is a redirect to the intro page
+      // The content of each page is rendered inside App's <Outlet />
       { index: true, element: <Navigate to="/docs/intro" replace /> }, 
       {
         path: "docs",

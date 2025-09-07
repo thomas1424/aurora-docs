@@ -1,22 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { FaGithub } from "react-icons/fa";
-import { LuPanelLeftClose } from "react-icons/lu"; // Add this
+import { LuPanelLeftClose } from "react-icons/lu";
 
 // --- SVG Components ---
 const Logo = () => ( <svg width="28" height="28" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 4L4 96H26L50 48.8L74 96H96L50 4Z" fill="url(#aurora-gradient)" /><defs><linearGradient id="aurora-gradient" x1="50" y1="4" x2="50" y2="96" gradientUnits="userSpaceOnUse"><stop stopColor="var(--color-accent-purple)" /><stop offset="1" stopColor="var(--color-accent-red)" /></linearGradient></defs></svg> );
 const SunIcon = () => ( <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg> );
 const MoonIcon = () => ( <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg> );
 
-// --- Reusable CodeBlock (Exported for pages) ---
+// --- Reusable Components (Exported for other pages) ---
 export const CodeBlock = ({ children, language = 'go' }) => {
   const customTheme = { ...atomDark, 'pre[class*="language-"]': { ...atomDark['pre[class*="language-"]'], backgroundColor: 'transparent', margin: 0 } };
   return ( <SyntaxHighlighter language={language} style={customTheme}>{children.trim()}</SyntaxHighlighter> );
 };
-
-// --- HeroSection (Exported for Intro page) ---
 export const HeroSection = () => (
   <section className="hero">
     <h1 className="hero-title gradient-text">Simple. Modern. Expressive.</h1>
@@ -28,18 +26,16 @@ export const HeroSection = () => (
 // --- Layout Components ---
 const Header = ({ theme, setTheme, onMenuClick }) => (
   <header className="header">
-    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+    <div className="header-left">
       <button className="mobile-menu-button" onClick={onMenuClick}>☰</button>
-      <NavLink to="/" className="header-logo" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
+      <NavLink to="/" className="desktop-logo">
         <Logo />
-        <span style={{ color: 'var(--color-text-primary)' }}>Aurora</span>
-        <span style={{ fontSize: '0.7em', fontWeight: '600', padding: '2px 6px', borderRadius: '6px', backgroundColor: 'var(--color-panel-border)', color: 'var(--color-text-secondary)'}}>
-          v0.1
-        </span>
+        <span>Aurora</span>
       </NavLink>
     </div>
     <div className="header-nav">
       <div className="header-nav-tools">
+        <span>v0.1</span>
         <button className="tool-button" onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
           {theme === 'light' ? <MoonIcon /> : <SunIcon />}
         </button>
@@ -51,12 +47,17 @@ const Header = ({ theme, setTheme, onMenuClick }) => (
   </header>
 );
 
+// CORRECTED: This is the one, final Sidebar component
 const Sidebar = ({ sections, onLinkClick, className = '', isCollapsed, toggleSidebarCollapse }) => (
   <aside className={`sidebar ${className}`}>
-    {/* NEW: Persistent Logo Header inside the Sidebar */}
     <div className="sidebar-header-internal">
-      <Logo />
-      {!isCollapsed && <span>Aurora</span>}
+      <div className="logo-text-container">
+        <Logo />
+        {!isCollapsed && <span>Aurora</span>}
+      </div>
+      <button className="sidebar-collapse-button" onClick={toggleSidebarCollapse} style={{ transform: isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+          <LuPanelLeftClose size={20} />
+      </button>
     </div>
 
     <nav className="sidebar-nav">
@@ -72,66 +73,20 @@ const Sidebar = ({ sections, onLinkClick, className = '', isCollapsed, toggleSid
         ))}
       </ul>
     </nav>
-    <button className="sidebar-collapse-button" onClick={toggleSidebarCollapse} style={{ transform: isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)' }}>
-        <LuPanelLeftClose size={20} />
-    </button>
   </aside>
 );
-
-// THIS IS THE CORRECTED FOOTER COMPONENT
-const Footer = () => (
-    <footer className="footer">
-        <div className="footer-content">
-            <div className="footer-branding">
-                <div className="footer-logo">
-                    <Logo />
-                    <span>Aurora</span>
-                </div>
-                <p className="footer-tagline">
-                    A simple, modern scripting language designed for clarity, education, and ease of use.
-                </p>
-            </div>
-            <div className="footer-links">
-                <div className="footer-column">
-                    <h4>Learn Aurora</h4>
-                    <ul>
-                        <li><NavLink to="/docs/installation">Installation</NavLink></li>
-                        <li><NavLink to="/docs/usage">Usage</NavLink></li>
-                        <li><NavLink to="/docs/changelog">Changelog</NavLink></li>
-                    </ul>
-                </div>
-                <div className="footer-column">
-                    <h4>Channels</h4>
-                    <ul>
-                        <li><a href="https://github.com/thomas1424/aurora" target="_blank" rel="noopener noreferrer">GitHub</a></li>
-                        <li><NavLink to="/docs/discord">Discord</NavLink></li>
-                    </ul>
-                </div>
-                <div className="footer-column">
-                    <h4>More</h4>
-                    <ul>
-                        <li><a href="#">About</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <p className="footer-copyright">Copyright © 2025, Thomas Pan, Documentation Created with React.</p>
-    </footer>
-);
-
 
 // --- Main App Shell ---
 function App() {
   const [theme, setTheme] = useState('dark');
   const [isSidebarOpen, setSidebarOpen] = useState(false);
-    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
     document.body.className = theme;
   }, [theme]);
   
-  // Close sidebar on page navigation for mobile
   useEffect(() => {
     setSidebarOpen(false);
   }, [location]);
@@ -149,33 +104,35 @@ function App() {
     { title: 'The Lexer', path: '/docs/lexer', level: 1 },
     { title: 'The Parser', path: '/docs/parser', level: 1 },
     { title: 'The Evaluator', path: '/docs/evaluator', level: 1 },
-    { title: 'Changelog', path: '/docs/changelog', level: 1 }, // Changed to level 1 for consistency
+    { title: 'Changelog', path: '/docs/changelog', level: 1 },
     { title: 'Community', path: 'community', level: 0 },
     { title: 'Discord', path: '/docs/discord', level: 1 },
   ];
 
-return (
-  <div className={`App ${isSidebarOpen ? 'sidebar-open' : ''} ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
-    {/* NEW: Mobile overlay for closing the menu */}
-    <div 
-      className={`mobile-overlay ${isSidebarOpen ? 'visible' : ''}`}
-      onClick={() => setSidebarOpen(false)}
-    ></div>
+  return (
+    <div className={`App ${isSidebarOpen ? 'sidebar-open' : ''} ${isSidebarCollapsed ? 'sidebar-collapsed' : 'sidebar-expanded'}`}>
+      <div 
+        className={`mobile-overlay ${isSidebarOpen ? 'visible' : ''}`}
+        onClick={() => setSidebarOpen(false)}
+      ></div>
 
-    <Header theme={theme} setTheme={setTheme} onMenuClick={() => setSidebarOpen(!isSidebarOpen)} />
-    <Sidebar 
-      sections={sections} 
-      onLinkClick={() => setSidebarOpen(false)} 
-      className={isSidebarOpen ? 'open' : ''}
-      isCollapsed={isSidebarCollapsed}
-      toggleSidebarCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-    />
-    
-    <div className="main-content-area">
-      <Outlet /> {/* Renders the current page's content */}
+      <Header theme={theme} setTheme={setTheme} onMenuClick={() => setSidebarOpen(!isSidebarOpen)} />
+      
+      <Sidebar 
+        sections={sections} 
+        onLinkClick={() => setSidebarOpen(false)} 
+        className={isSidebarOpen ? 'open' : ''}
+        isCollapsed={isSidebarCollapsed}
+        toggleSidebarCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+      />
+      
+      <div className="main-content-area">
+        <Outlet />
+        {/* Note: The Footer has been removed for now based on the layout screenshot.
+            We can add it back later if you'd like. */}
+      </div>
     </div>
-  </div>
-);
+  );
 }
 
 export default App;
