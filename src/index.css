@@ -63,18 +63,80 @@ body {
   .App {
     grid-template-columns: 1fr;
   }
+  /* ADD THIS NEW RULE */
+  .App.sidebar-open .main-content-area {
+    transform: translateX(280px);
+  }
 }
 .sidebar {
-  width: 280px;
+  width: auto; /* Let the grid control the width */
   height: 100vh;
   position: fixed;
   top: 0;
   left: 0;
-  padding-top: 80px; /* Space for header */
+  padding-top: 65px; /* Space for main header */
   background-color: var(--color-panel-bg);
-  border-right: 1px solid var(--color-panel-border);
-  overflow-y: auto;
+  border-right: 1px solid var(--color-panel-border); /* The visual separator */
+  overflow-x: hidden; /* Hide text when collapsing */
   transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.3s ease;
+  position: relative; /* Needed for the collapse button */
+}
+
+/* NEW: Styles for the logo area inside the sidebar */
+.sidebar-header-internal {
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  white-space: nowrap; /* Prevent text wrapping during collapse */
+}
+
+.sidebar-header-internal span {
+  font-size: 1.4em;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+/* NEW: Styles for the collapse button */
+.sidebar-collapse-button {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  background-color: var(--color-panel-border);
+  color: var(--color-text-secondary);
+  border: none;
+  border-radius: 6px;
+  padding: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.sidebar-collapse-button:hover {
+  background-color: var(--color-accent-purple);
+  color: white;
+}
+.App.sidebar-collapsed .sidebar-collapse-button {
+  right: 12px; /* Adjust position when collapsed */
+}
+
+/* NEW: Styles for the mobile overlay */
+.mobile-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 15; /* Below sidebar, above content */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+.mobile-overlay.visible {
+  opacity: 1;
+  visibility: visible;
 }
 
 .header {
@@ -253,8 +315,7 @@ body {
 /* --- Main Content: Documentation --- */
 .content-container { padding: 40px; }
 .content-section {
-  margin: 0 auto 64px auto; /* Changed from 100px */
-  padding-top: 80px;
+  margin: 80px auto 64px auto; /* Changed padding-top to margin-top */
   max-width: var(--max-content-width);
 }
 h2 {
@@ -392,6 +453,14 @@ pre code { font-size: 0.9em; line-height: 1.8; }
   background: none;
   cursor: pointer;
 }
+
+.main-content-area {
+  /* This is part of the Grid layout, it will take the second column */
+  grid-column: 2;
+  /* This transition makes the push animation smooth on mobile */
+  transition: transform 0.3s ease-in-out;
+}
+
 @media (max-width: 1024px) {
   .mobile-menu-button { display: block; }
 }

@@ -10,10 +10,11 @@ let version = 1;        // Type is Integer
 let is_awesome = true;    // Type is Boolean`}</CodeBlock></pre>
         <h3>Core Data Types</h3>
         <ul>
-            <li><strong>Integers:</strong> 64-bit signed integers.</li>
-            <li><strong>Booleans:</strong> <code>true</code> or <code>false</code>.</li>
-            <li><strong>Strings:</strong> UTF-8 text enclosed in double quotes <code>"..."</code>.</li>
-            <li><strong>Null:</strong> Represents the intentional absence of a value.</li>
+            <li><strong>Integers:</strong> 64-bit signed integers (e.g., <code>10</code>, 
+            <code>-500</code>).</li>
+            <li><strong>Booleans:</strong> <code>true</code> or <code>false</code>. Used for logic and control flow.</li>
+            <li><strong>Strings:</strong> UTF-8 text enclosed in double quotes <code>"..."</code>. Supports concatenation with <code>+</code>.</li>
+            <li><strong>Null:</strong> A special type representing the intentional absence of a value. Functions without an explicit <code>return</code> will return <code>null</code>.</li>
         </ul>
     </section>
 );

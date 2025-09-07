@@ -1,5 +1,21 @@
 .App {
-  text-align: center;
+  display: grid;
+  /* Sidebar is 280px wide by default */
+  grid-template-columns: 280px 1fr;
+  min-height: 100vh;
+  transition: grid-template-columns 0.3s ease-in-out;
+}
+
+/* NEW: When collapsed, the sidebar is only 60px wide */
+.App.sidebar-collapsed {
+  grid-template-columns: 60px 1fr;
+}
+
+/* On mobile, collapse to a single column */
+@media (max-width: 1024px) {
+  .App, .App.sidebar-collapsed {
+    grid-template-columns: 1fr;
+  }
 }
 
 .App-logo {

@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { NavLink, Outlet, useLocation } from 'react-router-dom'; // Import router components
+import React, { useState, useEffect } from 'react';
+import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { FaGithub } from "react-icons/fa";
+import { LuPanelLeftClose } from "react-icons/lu"; // Add this
 
 // --- SVG Components ---
 const Logo = () => ( <svg width="28" height="28" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 4L4 96H26L50 48.8L74 96H96L50 4Z" fill="url(#aurora-gradient)" /><defs><linearGradient id="aurora-gradient" x1="50" y1="4" x2="50" y2="96" gradientUnits="userSpaceOnUse"><stop stopColor="var(--color-accent-purple)" /><stop offset="1" stopColor="var(--color-accent-red)" /></linearGradient></defs></svg> );
@@ -50,30 +51,80 @@ const Header = ({ theme, setTheme, onMenuClick }) => (
   </header>
 );
 
-const Sidebar = ({ sections, onLinkClick, className = '' }) => (
+const Sidebar = ({ sections, onLinkClick, className = '', isCollapsed, toggleSidebarCollapse }) => (
   <aside className={`sidebar ${className}`}>
+    {/* NEW: Persistent Logo Header inside the Sidebar */}
+    <div className="sidebar-header-internal">
+      <Logo />
+      {!isCollapsed && <span>Aurora</span>}
+    </div>
+
     <nav className="sidebar-nav">
       <ul>
         {sections.map(section => (
           section.level === 0
-            ? <h3 key={section.path}>{section.title}</h3>
+            ? <h3 key={section.path} style={{ opacity: isCollapsed ? 0 : 1 }}>{section.title}</h3>
             : <li key={section.path}>
-                <NavLink to={section.path} onClick={onLinkClick}>
-                  {section.title}
+                <NavLink to={section.path} onClick={onLinkClick} className={({ isActive }) => isActive ? "active" : ""}>
+                  <span style={{ opacity: isCollapsed ? 0 : 1 }}>{section.title}</span>
                 </NavLink>
               </li>
         ))}
       </ul>
     </nav>
+    <button className="sidebar-collapse-button" onClick={toggleSidebarCollapse} style={{ transform: isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+        <LuPanelLeftClose size={20} />
+    </button>
   </aside>
 );
 
-const Footer = () => ( /* ... same as before ... */ );
+// THIS IS THE CORRECTED FOOTER COMPONENT
+const Footer = () => (
+    <footer className="footer">
+        <div className="footer-content">
+            <div className="footer-branding">
+                <div className="footer-logo">
+                    <Logo />
+                    <span>Aurora</span>
+                </div>
+                <p className="footer-tagline">
+                    A simple, modern scripting language designed for clarity, education, and ease of use.
+                </p>
+            </div>
+            <div className="footer-links">
+                <div className="footer-column">
+                    <h4>Learn Aurora</h4>
+                    <ul>
+                        <li><NavLink to="/docs/installation">Installation</NavLink></li>
+                        <li><NavLink to="/docs/usage">Usage</NavLink></li>
+                        <li><NavLink to="/docs/changelog">Changelog</NavLink></li>
+                    </ul>
+                </div>
+                <div className="footer-column">
+                    <h4>Channels</h4>
+                    <ul>
+                        <li><a href="https://github.com/thomas1424/aurora" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+                        <li><NavLink to="/docs/discord">Discord</NavLink></li>
+                    </ul>
+                </div>
+                <div className="footer-column">
+                    <h4>More</h4>
+                    <ul>
+                        <li><a href="#">About</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <p className="footer-copyright">Copyright © 2025, Thomas Pan, Documentation Created with React.</p>
+    </footer>
+);
+
 
 // --- Main App Shell ---
 function App() {
   const [theme, setTheme] = useState('dark');
   const [isSidebarOpen, setSidebarOpen] = useState(false);
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -98,22 +149,33 @@ function App() {
     { title: 'The Lexer', path: '/docs/lexer', level: 1 },
     { title: 'The Parser', path: '/docs/parser', level: 1 },
     { title: 'The Evaluator', path: '/docs/evaluator', level: 1 },
-    { title: 'Changelog', path: '/docs/changelog', level: 0 },
+    { title: 'Changelog', path: '/docs/changelog', level: 1 }, // Changed to level 1 for consistency
     { title: 'Community', path: 'community', level: 0 },
     { title: 'Discord', path: '/docs/discord', level: 1 },
   ];
 
-  return (
-    <div className="App">
-      <Header theme={theme} setTheme={setTheme} onMenuClick={() => setSidebarOpen(!isSidebarOpen)} />
-      <Sidebar sections={sections} onLinkClick={() => setSidebarOpen(false)} className={isSidebarOpen ? 'open' : ''} />
-      
-      <div className="main-content-area">
-        <Outlet /> {/* This is where the magic happens - the current page's content is rendered here */}
-        <Footer />
-      </div>
+return (
+  <div className={`App ${isSidebarOpen ? 'sidebar-open' : ''} ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+    {/* NEW: Mobile overlay for closing the menu */}
+    <div 
+      className={`mobile-overlay ${isSidebarOpen ? 'visible' : ''}`}
+      onClick={() => setSidebarOpen(false)}
+    ></div>
+
+    <Header theme={theme} setTheme={setTheme} onMenuClick={() => setSidebarOpen(!isSidebarOpen)} />
+    <Sidebar 
+      sections={sections} 
+      onLinkClick={() => setSidebarOpen(false)} 
+      className={isSidebarOpen ? 'open' : ''}
+      isCollapsed={isSidebarCollapsed}
+      toggleSidebarCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+    />
+    
+    <div className="main-content-area">
+      <Outlet /> {/* Renders the current page's content */}
     </div>
-  );
+  </div>
+);
 }
 
 export default App;
